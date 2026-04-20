@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Play Tic-Tac-Toe against a friend or an unbeatable AI. Features premium neon design, sound effects, scoreboard, game history, and multiple difficulty levels." />
+    <title>Tic-Tac-Toe · Modern Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+
+    <!-- ░░ Star field canvas ░░ -->
+    <canvas id="starsCanvas" aria-hidden="true"></canvas>
+
+    <!-- ░░ Confetti canvas ░░ -->
+    <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+    <!-- ░░ Ambient glow orbs ░░ -->
+    <div class="orbs" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
+    <!-- ░░ Header ░░ -->
+    <header class="header">
+      <div class="header-inner">
+        <div class="brand">
+          <span class="brand-x">✕</span>
+          <span class="brand-text">TicTacToe</span>
+          <span class="brand-o">○</span>
+        </div>
+        <div class="header-controls">
+          <button id="soundToggleBtn" class="ctrl-btn" aria-label="Toggle sound" title="Toggle Sound">
+            <svg id="soundOnIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+            <svg id="soundOffIcon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+          </button>
+          <button id="themeToggleBtn" class="ctrl-btn" aria-label="Toggle theme" title="Toggle Theme">
+            <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+            <svg id="moonIcon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ░░ Main ░░ -->
+    <main class="main">
+
+      <!-- ── Mode & Settings Card ── -->
+      <section class="card settings-card" aria-label="Game settings">
+
+        <!-- Mode Tabs -->
+        <div class="mode-tabs">
+          <button class="mode-tab active" id="pvpBtn" data-mode="pvp" aria-pressed="true">
+            <span class="mode-tab-icon">👥</span>
+            <span>Player vs Player</span>
+          </button>
+          <button class="mode-tab" id="pvaiBtn" data-mode="pvai" aria-pressed="false">
+            <span class="mode-tab-icon">🤖</span>
+            <span>Player vs AI</span>
+          </button>
+        </div>
+
+        <!-- Difficulty (AI mode only) -->
+        <div class="diff-row hidden" id="difficultyRow">
+          <span class="row-label">Difficulty</span>
+          <div class="pill-group">
+            <button class="pill" id="easyBtn" data-diff="easy">Easy</button>
+            <button class="pill active" id="mediumBtn" data-diff="medium">Medium</button>
+            <button class="pill" id="hardBtn" data-diff="hard">🔥 Hard</button>
+          </div>
+        </div>
+
+        <!-- Player Names -->
+        <div class="names-row">
+          <div class="name-field x-field">
+            <label for="playerXName">
+              <span class="x-sym">✕</span> Player X
+            </label>
+            <input type="text" id="playerXName" maxlength="12" placeholder="Enter name" autocomplete="off" />
+          </div>
+          <div class="vs-divider">
+            <span>VS</span>
+          </div>
+          <div class="name-field o-field">
+            <label for="playerOName">
+              <span class="o-sym">○</span> Player O
+            </label>
+            <input type="text" id="playerOName" maxlength="12" placeholder="Enter name" autocomplete="off" />
+          </div>
+        </div>
+
+        <!-- Sound toggle (hidden input, managed by header button) -->
+        <input type="checkbox" id="soundToggle" checked class="sr-only" />
+
+      </section>
+
+      <!-- ── Status Banner ── -->
+      <div class="status-banner" id="statusBar" role="status" aria-live="polite">
+        <div class="status-inner">
+          <div class="player-avatar" id="statusAvatar">?</div>
+          <span class="status-text" id="statusText">Press New Game to start!</span>
+        </div>
+      </div>
+
+      <!-- ── Game Board ── -->
+      <section class="board-section" aria-label="Game board">
+        <div class="board-glow"></div>
+        <div class="board" id="board" role="grid" aria-label="Tic-Tac-Toe board">
+          <button class="cell" id="cell-0" data-index="0" aria-label="Row 1, Column 1" role="gridcell"></button>
+          <button class="cell" id="cell-1" data-index="1" aria-label="Row 1, Column 2" role="gridcell"></button>
+          <button class="cell" id="cell-2" data-index="2" aria-label="Row 1, Column 3" role="gridcell"></button>
+          <button class="cell" id="cell-3" data-index="3" aria-label="Row 2, Column 1" role="gridcell"></button>
+          <button class="cell" id="cell-4" data-index="4" aria-label="Row 2, Column 2" role="gridcell"></button>
+          <button class="cell" id="cell-5" data-index="5" aria-label="Row 2, Column 3" role="gridcell"></button>
+          <button class="cell" id="cell-6" data-index="6" aria-label="Row 3, Column 1" role="gridcell"></button>
+          <button class="cell" id="cell-7" data-index="7" aria-label="Row 3, Column 2" role="gridcell"></button>
+          <button class="cell" id="cell-8" data-index="8" aria-label="Row 3, Column 3" role="gridcell"></button>
+        </div>
+      </section>
+
+      <!-- ── Action Buttons ── -->
+      <div class="action-row">
+        <button class="btn btn-primary" id="startBtn">
+          <span class="btn-icon">⚡</span> New Game
+        </button>
+        <button class="btn btn-outline" id="resetScoreBtn">
+          <span class="btn-icon">↺</span> Reset Scores
+        </button>
+      </div>
+
+      <!-- ── Scoreboard ── -->
+      <section class="card score-card" aria-label="Scoreboard">
+        <h2 class="card-title">📊 Scoreboard</h2>
+        <div class="score-grid">
+          <div class="score-col x-col">
+            <div class="score-name" id="scoreXName">Player X</div>
+            <div class="score-ring x-ring">
+              <span class="score-num" id="scoreX">0</span>
+            </div>
+            <div class="score-label">Wins</div>
+          </div>
+          <div class="score-col draw-col">
+            <div class="score-name">Draws</div>
+            <div class="score-ring draw-ring">
+              <span class="score-num" id="scoreDraws">0</span>
+            </div>
+            <div class="score-label">Ties</div>
+          </div>
+          <div class="score-col o-col">
+            <div class="score-name" id="scoreOName">Player O</div>
+            <div class="score-ring o-ring">
+              <span class="score-num" id="scoreO">0</span>
+            </div>
+            <div class="score-label">Wins</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── History ── -->
+      <section class="card history-card" aria-label="Game history">
+        <h2 class="card-title">📜 Recent Games</h2>
+        <ul class="history-list" id="historyList" aria-label="Last 5 game results">
+          <li class="history-placeholder">No games played yet</li>
+        </ul>
+      </section>
+
+    </main>
+
+    <!-- ░░ Result Overlay ░░ -->
+    <div class="overlay hidden" id="resultOverlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
+      <div class="overlay-card">
+        <div class="overlay-glow"></div>
+        <div class="result-emoji" id="resultEmoji">🏆</div>
+        <h2 class="result-title" id="resultTitle">Player X Wins!</h2>
+        <p class="result-sub" id="resultSubtitle">Brilliant moves!</p>
+        <div class="overlay-actions">
+          <button class="btn btn-primary" id="playAgainBtn">⚡ Play Again</button>
+          <button class="btn btn-ghost" id="closeOverlayBtn">Dismiss</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
